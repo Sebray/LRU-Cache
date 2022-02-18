@@ -131,4 +131,8 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
         }while(node != null);
         return stringJoiner.toString();
     }
+
+    public V getLastElement(){
+        return tail.element.value;
+    }
 }
