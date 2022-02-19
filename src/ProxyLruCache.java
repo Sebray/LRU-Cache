@@ -50,14 +50,17 @@ public class ProxyLruCache<K, V> implements LruCache<K, V>{
         return lruCacheImp.getLimit();
     }
 
+    @Override
+    public String toStringValue() {
+        return lruCacheImp.toStringValue();
+    }
+
     private void printHistory(){
         System.out.println("История обращений к ключам:");
-        if(history.size() == 0)
+        if(history.isEmpty())
             System.out.println("пусто");
         else{
-            history.forEach((K val)->{
-                System.out.println("\t* " + val);
-            });
+            history.forEach((K val)-> System.out.println("\t* " + val));
         }
     }
 }

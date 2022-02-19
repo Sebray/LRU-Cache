@@ -1,5 +1,3 @@
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Main {
@@ -10,14 +8,14 @@ public class Main {
         while(currentAction != 0){
             switch (currentAction) {
                 case 1 -> {
-                    String str = lruCacheImp.get(getInt(in, "Введите ключ"));
+                    String str = lruCacheImp.get(getInt(in));
                     if (str == null)
                         System.out.println("Данный ключ не найден");
                     else
                         System.out.println("Значение: " + str);
                 }
                 case 2 -> {
-                    lruCacheImp.set(getInt(in, "Введите ключ"), getStr(in, "Введите значение"));
+                    lruCacheImp.set(getInt(in), getStr(in));
                     System.out.println("Элемент добавлен");
                 }
                 case 3 -> System.out.println("Кэш: " + lruCacheImp.toStringValue());
@@ -38,13 +36,13 @@ public class Main {
         return getInt(in, 0, 5, "введите число");
     }
 
-    private static int getInt (Scanner in,String str){
-        System.out.println(str);
+    private static int getInt(Scanner in){
+        System.out.println("Введите ключ");
         return in.nextInt();
     }
 
-    private static String getStr (Scanner in,String message){
-        System.out.println(message);
+    private static String getStr(Scanner in){
+        System.out.println("Введите значение");
         return in.next();
     }
 

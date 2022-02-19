@@ -18,7 +18,8 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
         }
 
         private CacheElement<K, V> element;
-        private Node<K, V> left, right;
+        private Node<K, V> left;
+         private Node<K, V> right;
 
         public Node(CacheElement<K, V> el, Node<K, V> left, Node<K, V> right){
             element = el;
@@ -29,7 +30,8 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
 
     private static final int MAX_SIZE = 3;
     private final HashMap<K, Node<K, V>> hashMap;
-    private Node<K, V> head, tail;
+    private Node<K, V> head;
+    private Node<K, V> tail;
     private int size;
 
     public LruCacheImp(){
@@ -54,45 +56,26 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
 
     @Override
     public void set(K key, V value) {
-        Node<K, V> node;
         Node.CacheElement<K, V> cacheElement = new Node.CacheElement<>(key, value);
         if (hashMap.containsKey(key)){
-            node =  hashMap.get(key);
-            hashMap.get(key).element = cacheElement;
-            moveToFirst(node);
+            changeValueOfKey(key, cacheElement);
             return;
         }
 
         if (size == MAX_SIZE){
-            node = tail;
-
-            if (tail.left != null){
-                tail = tail.left;
-                tail.right = null;
-            }
-            hashMap.remove(node.element.key);
-
-            node = new Node<>(cacheElement, null, head);
-            head.left = node;
-            head = head.left;
-            hashMap.put(key, node);
+            deleteLastElement();
+            addElement(key, cacheElement, false);
             return;
         }
-        //не полносью заполненный
-        if (size == 0){
-            node = new Node<>(cacheElement, null, null);
-            head = node;
-            tail = head;
-        }
-        else{
-            node = new Node<>(cacheElement, null, head);
-            head.left = node;
-            head = node;
 
-        }
-
-        hashMap.put(key, node);
+        addElement(key, cacheElement, size == 0);
         size++;
+    }
+
+    private void changeValueOfKey(K key, Node.CacheElement<K, V> cacheElement){
+        Node<K, V> node =  hashMap.get(key);
+        hashMap.get(key).element = cacheElement;
+        moveToFirst(node);
     }
 
     private void moveToFirst(Node<K, V> node){
@@ -110,6 +93,29 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
         head = node;
     }
 
+    private void deleteLastElement(){
+        Node<K, V> node = tail;
+
+        if (tail.left != null){
+            tail = tail.left;
+            tail.right = null;
+        }
+        hashMap.remove(node.element.key);
+    }
+
+    private void addElement(K key, Node.CacheElement<K, V> cacheElement, boolean isEmpty){
+        Node<K, V> node;
+        if(isEmpty){
+            node = new Node<>(cacheElement, null, null);
+        }
+        else{
+            node = new Node<>(cacheElement, null, head);
+            head.left = node;
+        }
+        head = node;
+        hashMap.put(key, node);
+    }
+
     @Override
     public int getSize() {
         return size;
@@ -120,6 +126,7 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
         return MAX_SIZE;
     }
 
+    @Override
     public String toStringValue(){
         StringJoiner stringJoiner = new StringJoiner("; ", "", "");
         Node<K, V> node = head;
