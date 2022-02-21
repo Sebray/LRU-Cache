@@ -1,59 +1,67 @@
+import inputs.*;
+import lruCache.Factory;
+import lruCache.LruCache;
+
 import java.util.Scanner;
 
 public class Main {
-    public static void main (String... args){
-        LruCacheImp<Integer, String> lruCacheImp = new LruCacheImp<>();
-        Scanner in = new Scanner(System.in);
-        int currentAction = menu(in);
-        while(currentAction != 0){
-            switch (currentAction) {
-                case 1 -> {
-                    String str = lruCacheImp.get(getInt(in));
-                    if (str == null)
-                        System.out.println("Данный ключ не найден");
-                    else
-                        System.out.println("Значение: " + str);
-                }
-                case 2 -> {
-                    lruCacheImp.set(getInt(in), getStr(in));
-                    System.out.println("Элемент добавлен");
-                }
-                case 3 -> System.out.println("Кэш: " + lruCacheImp.toStringValue());
-                case 4 -> System.out.println("Кол-во элементов: " + lruCacheImp.getSize());
-                case 5 -> System.out.println("Максимальное кол-во элементов: " + lruCacheImp.getLimit());
+    private static InputData input;
+    private static final Factory factory = new Factory();
+    private static final Scanner in = new Scanner(System.in);
+    private static final Menu menu = new Menu();
+    private static final LruCache lruCache = createLruCache();
+
+
+    public static void main(String... args) {
+        int currentAction = menu.menuAction(in);
+        while (currentAction != 0) {
+            doAction(currentAction);
+            currentAction = menu.menuAction(in);
+        }
+    }
+
+    private static LruCache createLruCache() {//Создается кэш с выбранным типом
+        return switch (menu.menuTypeChose(in)) {
+            case 1 -> {
+                input = new InputIntInt();
+                yield factory.createLruCache(Types.INTEGER, Types.INTEGER);
             }
-            currentAction = menu(in);
+            case 2 -> {
+                input = new InputIntStr();
+                yield factory.createLruCache(Types.INTEGER, Types.STRING);
+            }
+            case 3 -> {
+                input = new InputStrStr();
+                yield factory.createLruCache(Types.STRING, Types.INTEGER);
+            }
+            case 4 -> {
+                input = new InputStrStr();
+                yield factory.createLruCache(Types.STRING, Types.STRING);
+            }
+            default -> throw new IllegalStateException("Неожиданное значение");
+        };
+    }
+
+    private static void doAction(int currentAction) {
+        switch (currentAction) {
+            case 1 -> outputValueFromKey();
+            case 2 -> {
+                lruCache.set(input.inputKey(in), input.inputValue(in));
+                System.out.println("Элемент добавлен");
+            }
+            case 3 -> System.out.println("Кэш: " + lruCache.toStringValue());
+            case 4 -> System.out.println("Кол-во элементов: " + lruCache.getSize());
+            case 5 -> System.out.println("Максимальное кол-во элементов: " + lruCache.getLimit());
+            default -> throw new IllegalStateException("Неожиданное значение");
         }
     }
-    private static int menu (Scanner in) {
-        System.out.println("Выберите действие");
-        System.out.println("0 - выход");
-        System.out.println("1 - получть элемент по ключу");
-        System.out.println("2 - установить элемент");
-        System.out.println("3 - Напечатать");
-        System.out.println("4 - показать кол-во элементов");
-        System.out.println("5 - показать максимальный размер");
-        return getInt(in, 0, 5, "введите число");
-    }
 
-    private static int getInt(Scanner in){
-        System.out.println("Введите ключ");
-        return in.nextInt();
-    }
-
-    private static String getStr(Scanner in){
-        System.out.println("Введите значение");
-        return in.next();
-    }
-
-    private static int getInt (Scanner in, int left, int right, String str){
-        System.out.println(str);
-        int num = in.nextInt();
-        while (num < left || num > right){
-            System.out.println("Повторите ввод");
-            num = in.nextInt();
-        }
-        return num;
+    private static void outputValueFromKey() {//метод для полченя значения по ключу
+        Object val = lruCache.get(input.inputKey(in));
+        if (val == null)
+            System.out.println("Данный ключ не найден");
+        else
+            System.out.println("Значение ключа: " + val);
     }
 }
 

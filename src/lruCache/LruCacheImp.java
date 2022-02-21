@@ -1,12 +1,15 @@
+package lruCache;
+
 import java.util.HashMap;
 import java.util.StringJoiner;
 
-public class LruCacheImp<K, V> implements LruCache<K,V>{
-     public static class Node<K, V>{
-        private static class CacheElement<K, V>{
+public class LruCacheImp<K, V> implements LruCache<K, V> {
+    public static class Node<K, V> {
+        private static class CacheElement<K, V> {
             K key;
             V value;
-            public CacheElement(K key, V value){
+
+            public CacheElement(K key, V value) {
                 this.key = key;
                 this.value = value;
             }
@@ -19,9 +22,9 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
 
         private CacheElement<K, V> element;
         private Node<K, V> left;
-         private Node<K, V> right;
+        private Node<K, V> right;
 
-        public Node(CacheElement<K, V> el, Node<K, V> left, Node<K, V> right){
+        public Node(CacheElement<K, V> el, Node<K, V> left, Node<K, V> right) {
             element = el;
             this.left = left;
             this.right = right;
@@ -34,7 +37,7 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
     private Node<K, V> tail;
     private int size;
 
-    public LruCacheImp(){
+    public LruCacheImp() {
         size = 0;
         hashMap = new HashMap<>(MAX_SIZE);
         head = null;
@@ -57,12 +60,12 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
     @Override
     public void set(K key, V value) {
         Node.CacheElement<K, V> cacheElement = new Node.CacheElement<>(key, value);
-        if (hashMap.containsKey(key)){
+        if (hashMap.containsKey(key)) {
             changeValueOfKey(key, cacheElement);
             return;
         }
 
-        if (size == MAX_SIZE){
+        if (size == MAX_SIZE) {
             deleteLastElement();
             addElement(key, cacheElement, false);
             return;
@@ -72,13 +75,13 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
         size++;
     }
 
-    private void changeValueOfKey(K key, Node.CacheElement<K, V> cacheElement){
-        Node<K, V> node =  hashMap.get(key);
+    private void changeValueOfKey(K key, Node.CacheElement<K, V> cacheElement) {
+        Node<K, V> node = hashMap.get(key);
         hashMap.get(key).element = cacheElement;
         moveToFirst(node);
     }
 
-    private void moveToFirst(Node<K, V> node){
+    private void moveToFirst(Node<K, V> node) {
         if (node == head)
             return;
         if (node == tail && size > 1)
@@ -93,22 +96,22 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
         head = node;
     }
 
-    private void deleteLastElement(){
+    private void deleteLastElement() {
         Node<K, V> node = tail;
 
-        if (tail.left != null){
+        if (tail.left != null) {
             tail = tail.left;
             tail.right = null;
         }
         hashMap.remove(node.element.key);
     }
 
-    private void addElement(K key, Node.CacheElement<K, V> cacheElement, boolean isEmpty){
+    private void addElement(K key, Node.CacheElement<K, V> cacheElement, boolean isEmpty) {
         Node<K, V> node;
-        if(isEmpty){
+        if (isEmpty) {
             node = new Node<>(cacheElement, null, null);
-        }
-        else{
+            tail = node;
+        } else {
             node = new Node<>(cacheElement, null, head);
             head.left = node;
         }
@@ -127,7 +130,7 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
     }
 
     @Override
-    public String toStringValue(){
+    public String toStringValue() {
         StringJoiner stringJoiner = new StringJoiner("; ", "", "");
         Node<K, V> node = head;
         if (node == null)
@@ -135,11 +138,11 @@ public class LruCacheImp<K, V> implements LruCache<K,V>{
         do {
             stringJoiner.add(node.element.toString());
             node = node.right;
-        }while(node != null);
+        } while (node != null);
         return stringJoiner.toString();
     }
 
-    public V getLastElement(){
+    public V getLastElement() {
         return tail.element.value;
     }
 }

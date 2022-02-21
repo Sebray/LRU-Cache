@@ -1,6 +1,8 @@
+package lruCache;
+
 import java.util.LinkedList;
 
-public class ProxyLruCache<K, V> implements LruCache<K, V>{
+public class ProxyLruCache<K, V> implements LruCache<K, V> {
 
     private final LruCacheImp<K, V> lruCacheImp;
     private final LinkedList<K> history;
@@ -14,12 +16,13 @@ public class ProxyLruCache<K, V> implements LruCache<K, V>{
     @Override
     public V get(K key) {
         long startTime = System.nanoTime();
+        long endTime;
         printHistory();
         V el = lruCacheImp.get(key);
         if (history.size() == MAX_SIZE)
             history.removeLast();
         history.addFirst(key);
-        long endTime = System.nanoTime();
+        endTime = System.nanoTime();
         System.out.println("Время выполнения: " + (endTime - startTime));
         return el;
     }
@@ -28,7 +31,7 @@ public class ProxyLruCache<K, V> implements LruCache<K, V>{
     public void set(K key, V value) {
         V lastEl;
         long startTime = System.nanoTime();
-
+        long endTime;
         if (lruCacheImp.getLimit() == lruCacheImp.getSize()) {
             lastEl = lruCacheImp.getLastElement();
             lruCacheImp.set(key, value);
@@ -36,7 +39,7 @@ public class ProxyLruCache<K, V> implements LruCache<K, V>{
         } else
             lruCacheImp.set(key, value);
 
-        long endTime = System.nanoTime();
+        endTime = System.nanoTime();
         System.out.println("Время выполнения: " + (endTime - startTime));
     }
 
@@ -55,12 +58,12 @@ public class ProxyLruCache<K, V> implements LruCache<K, V>{
         return lruCacheImp.toStringValue();
     }
 
-    private void printHistory(){
+    private void printHistory() {
         System.out.println("История обращений к ключам:");
-        if(history.isEmpty())
+        if (history.isEmpty())
             System.out.println("пусто");
-        else{
-            history.forEach((K val)-> System.out.println("\t* " + val));
+        else {
+            history.forEach((K val) -> System.out.println("\t* " + val));
         }
     }
 }

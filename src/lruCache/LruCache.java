@@ -1,3 +1,5 @@
+package lruCache;
+
 public interface LruCache<K, V> {
     V get(K key);
 
