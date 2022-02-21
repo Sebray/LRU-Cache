@@ -23,7 +23,7 @@ public class ProxyLruCache<K, V> implements LruCache<K, V> {
             history.removeLast();
         history.addFirst(key);
         endTime = System.nanoTime();
-        System.out.println("Время выполнения: " + (endTime - startTime));
+        System.out.println("Время выполнения в мс: " + (endTime - startTime));
         return el;
     }
 
@@ -40,7 +40,7 @@ public class ProxyLruCache<K, V> implements LruCache<K, V> {
             lruCacheImp.set(key, value);
 
         endTime = System.nanoTime();
-        System.out.println("Время выполнения: " + (endTime - startTime));
+        System.out.println("Время выполнения в мс: " + (endTime - startTime));
     }
 
     @Override

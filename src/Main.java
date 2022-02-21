@@ -1,6 +1,7 @@
 import inputs.*;
 import lruCache.Factory;
 import lruCache.LruCache;
+import lruCache.Types;
 
 import java.util.Scanner;
 
