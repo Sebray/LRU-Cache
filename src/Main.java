@@ -32,7 +32,7 @@ public class Main {
                 yield factory.createLruCache(Types.INTEGER, Types.STRING);
             }
             case 3 -> {
-                input = new InputStrStr();
+                input = new InputStrInt();
                 yield factory.createLruCache(Types.STRING, Types.INTEGER);
             }
             case 4 -> {
