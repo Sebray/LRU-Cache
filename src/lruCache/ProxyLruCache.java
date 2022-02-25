@@ -2,14 +2,14 @@ package lruCache;
 
 import java.util.LinkedList;
 
-public class ProxyLruCache<K, V> implements LruCache<K, V> {
+public class ProxyLruCache<K, V> implements ILruCache<K, V> {
 
-    private final LruCacheImp<K, V> lruCacheImp;
+    private final ILruCache<K, V> proxy;
     private final LinkedList<K> history;
     private final int MAX_SIZE = 10;
 
-    public ProxyLruCache(LruCacheImp<K, V> lruCacheImp) {
-        this.lruCacheImp = lruCacheImp;
+    public ProxyLruCache(ILruCache<K, V> proxy) {
+        this.proxy = proxy;
         history = new LinkedList<>();
     }
 
@@ -18,7 +18,7 @@ public class ProxyLruCache<K, V> implements LruCache<K, V> {
         long startTime = System.nanoTime();
         long endTime;
         printHistory();
-        V el = lruCacheImp.get(key);
+        V el = proxy.get(key);
         if (history.size() == MAX_SIZE)
             history.removeLast();
         history.addFirst(key);
@@ -32,12 +32,14 @@ public class ProxyLruCache<K, V> implements LruCache<K, V> {
         V lastEl;
         long startTime = System.nanoTime();
         long endTime;
-        if (lruCacheImp.getLimit() == lruCacheImp.getSize()) {
-            lastEl = lruCacheImp.getLastElement();
-            lruCacheImp.set(key, value);
+
+        if (proxy.getLimit() > proxy.getSize()) {
+            proxy.set(key, value);
+        } else{
+            lastEl = proxy.getLastElement();
+            proxy.set(key, value);
             System.out.println("Удаленный элемент: " + lastEl);
-        } else
-            lruCacheImp.set(key, value);
+        }
 
         endTime = System.nanoTime();
         System.out.println("Время выполнения в мс: " + (endTime - startTime));
@@ -45,17 +47,22 @@ public class ProxyLruCache<K, V> implements LruCache<K, V> {
 
     @Override
     public int getSize() {
-        return lruCacheImp.getSize();
+        return proxy.getSize();
     }
 
     @Override
     public int getLimit() {
-        return lruCacheImp.getLimit();
+        return proxy.getLimit();
     }
 
     @Override
     public String toStringValue() {
-        return lruCacheImp.toStringValue();
+        return proxy.toStringValue();
+    }
+
+    @Override
+    public V getLastElement() {
+        return proxy.getLastElement();
     }
 
     private void printHistory() {

@@ -3,7 +3,7 @@ package lruCache;
 import java.util.HashMap;
 import java.util.StringJoiner;
 
-public class LruCacheImp<K, V> implements LruCache<K, V> {
+public class LruCacheImp<K, V> implements ILruCache<K, V> {
     public static class Node<K, V> {
         private static class CacheElement<K, V> {
             K key;
@@ -45,32 +45,32 @@ public class LruCacheImp<K, V> implements LruCache<K, V> {
     }
 
     @Override
-    public V get(K key) {
+    public V get(K key) {//получаю значение кэша по ключу
         Node<K, V> node = hashMap.get(key);
         if (node == null)
             return null;
 
-        if (node == head)
+        if (node == head)//элемент найден, и он головной
             return node.element.value;
 
-        moveToFirst(node);
+        moveToFirst(node);//найден, передвигаю его вперед (последний вызванный)
         return node.element.value;
     }
 
     @Override
     public void set(K key, V value) {
         Node.CacheElement<K, V> cacheElement = new Node.CacheElement<>(key, value);
-        if (hashMap.containsKey(key)) {
-            changeValueOfKey(key, cacheElement);
+        if (hashMap.containsKey(key)) {//существует элемент с таким ключом
+            changeValueOfKey(key, cacheElement);//меняю значения
             return;
         }
-
+        //не существует еще такой элемент, и нет свободного места
         if (size == MAX_SIZE) {
-            deleteLastElement();
-            addElement(key, cacheElement, false);
+            deleteLastElement();//удаляю самый неиспоьзуемый элемент
+            addElement(key, cacheElement, false);//добавляю новый
             return;
         }
-
+        //есть свободное место
         addElement(key, cacheElement, size == 0);
         size++;
     }
@@ -82,21 +82,23 @@ public class LruCacheImp<K, V> implements LruCache<K, V> {
     }
 
     private void moveToFirst(Node<K, V> node) {
-        if (node == head)
+        if (node == head)//уже в начале
             return;
+
         if (node == tail && size > 1)
             tail = node.left;
         if (node.right != null)
             node.right.left = node.left;
         if (node.left != null)
             node.left.right = node.right;
+
         node.right = head;
         node.left = null;
         head.left = node;
         head = node;
     }
 
-    private void deleteLastElement() {
+    private void deleteLastElement() {//удаляю последний элемент
         Node<K, V> node = tail;
 
         if (tail.left != null) {
@@ -108,10 +110,10 @@ public class LruCacheImp<K, V> implements LruCache<K, V> {
 
     private void addElement(K key, Node.CacheElement<K, V> cacheElement, boolean isEmpty) {
         Node<K, V> node;
-        if (isEmpty) {
+        if (isEmpty) {//если добавляю первый элемент, то на него будет указыват head и tail
             node = new Node<>(cacheElement, null, null);
             tail = node;
-        } else {
+        } else {//в противном случае сдвигаю head влево
             node = new Node<>(cacheElement, null, head);
             head.left = node;
         }
@@ -142,6 +144,7 @@ public class LruCacheImp<K, V> implements LruCache<K, V> {
         return stringJoiner.toString();
     }
 
+    @Override
     public V getLastElement() {
         return tail.element.value;
     }

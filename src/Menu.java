@@ -4,11 +4,10 @@ public class Menu {
 
     public int menuTypeChose(Scanner in) {
         System.out.println("Выберите параметры кэша");
-        System.out.println("1 - ключ — Integer, значение — Integer");
-        System.out.println("2 - ключ — Integer, значение — String");
-        System.out.println("3 - ключ — String, значение — Integer");
-        System.out.println("4 - ключ — String, значение — String");
-        return getInt(in, 0, 5, "введите число");
+        System.out.println("1 - ключ — String, значение — Integer");
+        System.out.println("2 - ключ — String, значение — Double");
+        System.out.println("3 - ключ — Integer, значение — String");
+        return getInt(in, 1, 3, "введите число");
     }
 
     public int menuAction(Scanner in) {

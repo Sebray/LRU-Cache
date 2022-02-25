@@ -1,6 +1,6 @@
 package lruCache;
 
-public interface LruCache<K, V> {
+public interface ILruCache<K, V> {
     V get(K key);
 
     void set(K key, V value);
@@ -10,4 +10,6 @@ public interface LruCache<K, V> {
     int getLimit();
 
     String toStringValue();
+
+    V getLastElement();
 }
